@@ -4,12 +4,16 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
   help | config:help)
-    cat<<EOF
-    config (<app>|--global), Display all global or app-specific config vars
+    help_content='    config (<app>|--global), Display all global or app-specific config vars
     config:get (<app>|--global) KEY, Display a global or app-specific config value
     config:set (<app>|--global) KEY1=VALUE1 [KEY2=VALUE2 ...], Set one or more config vars
-    config:unset (<app>|--global) KEY1 [KEY2 ...], Unset one or more config vars
-EOF
+    config:unset (<app>|--global) KEY1 [KEY2 ...], Unset one or more config vars'
+    if [[ $1 = "config:help" ]] ; then
+        echo -e 'Usage: dokku config[:COMMAND] (<app>|--global)\n\nManage global or app-specific config vars.\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

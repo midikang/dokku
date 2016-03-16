@@ -106,11 +106,15 @@ sudo BUILD_STACK=true make install
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
-  help | derp:help)
-    cat<<EOF
-    derp:herp, Herps the derp
-    derp:serp [file], Shows the file's serp
-EOF
+  help | hello:help)
+    help_content='    hello <app>, Says "Hello <app>"
+    hello:world, Says "Hello world"'
+    if [[ $1 = "hello:help" ]] ; then
+        echo -e 'Usage: dokku hello[:world] [<app>]\n\nSays Hello (world/<app>).\n\nExample:\n\n $ dokku hello:world\nHello world\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

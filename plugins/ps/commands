@@ -4,8 +4,7 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
   help | ps:help)
-    cat<<EOF
-    ps <app>, List processes running in app container(s)
+    help_content='    ps <app>, List processes running in app container(s)
     ps:scale [<app> <proc>=<count> [<proc>=<count>]], Get/Set how many instances of a given process to run
     ps:start <app>, Start app container(s)
     ps:stop <app>, Stop app container(s)
@@ -13,8 +12,13 @@ case "$1" in
     ps:rebuildall, Rebuild all apps
     ps:restart <app>, Restart app container(s)
     ps:restartall, Restart all deployed app containers
-    ps:restore, Start previously running apps e.g. after reboot
-EOF
+    ps:restore, Start previously running apps e.g. after reboot'
+    if [[ $1 = "ps:help" ]] ; then
+        echo -e 'Usage: dokku ps[:COMMAND]\n\nList running processes in container, and restart app.\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

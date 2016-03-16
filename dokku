@@ -157,13 +157,45 @@ execute_dokku_cmd() {
 
 case "$1" in
   help|'')
-    echo "Usage: dokku [--quiet|--trace|--rm-container|--rm|--force] COMMAND <app> [command-specific-options]"
-    echo ""
-    echo "Options:"
+    export LC_ALL=C # so sort will respect non alpha characters
+    ALL_PLUGIN_COMMANDS=$(find -L "$PLUGIN_PATH/enabled" -name commands 2> /dev/null || true)
 
-    cat<<EOF | plugn trigger commands help | sort | column -c2 -t -s,
-    help, Print the list of commands
-EOF
+    # build list of core plugin command files
+    for plugin_command in $ALL_PLUGIN_COMMANDS;do
+      if [[ "$(readlink -f "$plugin_command")" == *core-plugins* ]]; then
+        CORE_PLUGIN_COMMANDS+="$plugin_command "
+      fi
+    done
+    # build list of non-core plugin command files
+    for plugin_command in $ALL_PLUGIN_COMMANDS;do
+      if [[ "$(readlink -f "$plugin_command")" != *core-plugins* ]]; then
+        COMMUNITY_PLUGIN_COMMANDS+="$plugin_command "
+      fi
+    done
+
+    echo -e "Usage: dokku [--quiet|--trace|--rm-container|--rm|--force] COMMAND <app> [command-specific-options]\n"
+    echo "Primary help options, type \"dokku COMMAND:help\" for more details, or dokku help --all to see all commands."
+    echo -e "\nCommands:\n"
+
+    if [[ "$2" == "--all" ]] ; then
+      for core_plugin_command in $CORE_PLUGIN_COMMANDS; do
+        $core_plugin_command help
+      done | sort | column -c2 -t -s,
+      echo -e "\nCommunity plugin commands:\n"
+      for community_plugin_command in $COMMUNITY_PLUGIN_COMMANDS; do
+        $community_plugin_command help
+      done | sort | column -c2 -t -s,
+    else
+      for core_plugin_command in $CORE_PLUGIN_COMMANDS; do
+        $core_plugin_command help
+      done | sort | sed -e '/^.*:/d' -e 's/\s[\[\<\-\(].*,/,/' | column -c2 -t -s,
+      if [[ -n "$COMMUNITY_PLUGIN_COMMANDS" ]]; then
+        echo -e "\nCommunity plugin commands:\n"
+        for community_plugin_command in $COMMUNITY_PLUGIN_COMMANDS; do
+          $community_plugin_command help
+        done | sort | column -c2 -t -s,
+      fi
+    fi
     ;;
 
   *)

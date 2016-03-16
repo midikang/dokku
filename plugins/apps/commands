@@ -4,12 +4,16 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
   help | apps:help)
-    cat<<EOF
-    apps, List your apps
+    help_content='    apps, List your apps
     apps:create <app>, Create a new app
     apps:destroy <app>, Permanently destroy an app
-    apps:rename <old-app> <new-app>, Rename an app
-EOF
+    apps:rename <old-app> <new-app>, Rename an app'
+    if [[ $1 = "apps:help" ]] ; then
+        echo -e 'Usage: dokku apps[:COMMAND]\n\nList your apps.\n\nExample:\n\n $ dokku apps\n=====> My Apps\n example\n example2\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

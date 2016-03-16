@@ -75,11 +75,15 @@ hello/commands
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
-  help)
-    cat<<EOF
-    hello <app>, Says "Hello <app>"
-    hello:world, Says "Hello world"
-EOF
+  help | hello:help)
+    help_content='    hello <app>, Says "Hello <app>"
+    hello:world, Says "Hello world"'
+    if [[ $1 = "hello:help" ]] ; then
+        echo -e 'Usage: dokku hello[:world] [<app>]\n\nSays Hello (world/<app>).\n\nExample:\n\n $ dokku hello:world\nHello world\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

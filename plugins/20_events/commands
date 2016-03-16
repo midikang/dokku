@@ -4,12 +4,16 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
   help | events:help)
-    cat<<EOF
-    events [-t], Show the last events (-t follows)
+    help_content='    events [-t], Show the last events (-t follows)
     events:list, List logged events
     events:on, Enable events logger
-    events:off, Disable events logger
-EOF
+    events:off, Disable events logger'
+    if [[ $1 = "events:help" ]] ; then
+        echo -e 'Usage: dokku events:COMMAND [-t]\n\nInteract with Dokku event logger.\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

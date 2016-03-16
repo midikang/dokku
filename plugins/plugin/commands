@@ -4,15 +4,19 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
   help | plugin:help)
-    cat<<EOF
-    plugin, Print active plugins
+    help_content='    plugin, Print active plugins
     plugin:install [--core|git-url [--committish tag|branch|commit|--name custom-plugin-name]], Optionally download git-url (with custom tag/committish) & run install trigger for active plugins (or only core ones)
     plugin:install-dependencies [--core], Run install-dependencies trigger for active plugins (or only core ones)
     plugin:update [name [committish]], Optionally update named plugin from git (with custom tag/committish) & run update trigger for active plugins
     plugin:enable <name>, Enable a previously disabled plugin
     plugin:disable <name>, Disable an installed plugin (third-party only)
-    plugin:uninstall <name>, Uninstall a plugin (third-party only)
-EOF
+    plugin:uninstall <name>, Uninstall a plugin (third-party only)'
+    if [[ $1 = "plugin:help" ]] ; then
+        echo -e 'Usage: dokku plugin[:COMMAND]\n\nView installed plugins and manage community plugins.\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

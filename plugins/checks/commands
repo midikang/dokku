@@ -3,12 +3,16 @@
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
-  help | ps:help)
-    cat<<EOF
-    checks <app>, Show zero-downtime status
+  help | checks:help)
+    help_content='    checks <app>, Show zero-downtime status
     checks:enable <app>, Enable zero-downtime checks
-    checks:disable <app>, Disable zero-downtime checks
-EOF
+    checks:disable <app>, Disable zero-downtime checks'
+    if [[ $1 = "checks:help" ]] ; then
+        echo -e 'Usage: dokku checks[:COMAND]\n\nManage zero-downtime checks.\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

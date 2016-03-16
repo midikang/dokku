@@ -4,12 +4,16 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
   help | tags:help)
-    cat<<EOF
-    tags <app>, List all app image tags
+    help_content='    tags <app>, List all app image tags
     tags:create <app> <tag>, Add tag to latest running app image
     tags:deploy <app> <tag>, Deploy tagged app image
-    tags:destroy <app> <tag>, Remove app image tag
-EOF
+    tags:destroy <app> <tag>, Remove app image tag'
+    if [[ $1 = "tags:help" ]] ; then
+        echo -e 'Usage: dokku tags[:COMMAND]\n\nManage docker image tags.\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

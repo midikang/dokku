@@ -1,17 +1,22 @@
 #!/usr/bin/env bash
-[[ " help " == *" $1 "* ]] || exit "$DOKKU_NOT_IMPLEMENTED_EXIT"
+[[ " help ls:help run:help trace:help url:help urls:help version:help " == *" $1 "* ]] || exit "$DOKKU_NOT_IMPLEMENTED_EXIT"
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
-  help)
-    cat<<EOF
-    ls, Pretty listing of deployed applications and containers
+  help|ls:help|run:help|trace:help|url:help|urls:help|version:help)
+    [[ $(echo "$1" | sed '/.*:help/!d') ]] && help_topic="${1%\:help}"
+    help_content='    ls , Pretty listing of deployed applications and containers
     run <app> <cmd>, Run a command in the environment of an application
     trace [on/off], Enable dokku tracing
     url <app>, Show the first URL for an application (compatibility)
     urls <app>, Show all URLs for an application
-    version, Print dokku's version
-EOF
+    version , Print dokku'"'"'s version'
+
+    if [[ $help_topic ]] ; then
+        echo "$help_content" | sed "/^\s*$help_topic\s/!d" | sort | sed '/^.*:/d' | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

@@ -4,12 +4,16 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
   help | proxy:help)
-    cat<<EOF
-    proxy <app>, Show proxy for app
+    help_content='    proxy <app>, Show proxy for app
     proxy:enable <app>, Enable proxy for app
     proxy:disable <app>, Disable proxy for app
-    proxy:set <app> <proxy_type>, NOT IMPLEMENTED YET!!
-EOF
+    proxy:set <app> <proxy_type>, NOT IMPLEMENTED YET!!'
+    if [[ $1 = "proxy:help" ]] ; then
+        echo -e 'Usage: dokku proxy[:COMMAND]\n\nControl the proxy used by dokku, per app.\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
     ;;
 
   *)

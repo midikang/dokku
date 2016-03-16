@@ -4,11 +4,15 @@ set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
 case "$1" in
   help | nginx:help)
-    cat<<EOF
-    nginx:build-config <app>, (Re)builds nginx config for given app
+    help_content='    nginx:build-config <app>, (Re)builds nginx config for given app
     nginx:access-logs <app> [-t], Show the nginx access logs for an application (-t follows)
-    nginx:error-logs <app> [-t], Show the nginx error logs for an application (-t follows)
-EOF
+    nginx:error-logs <app> [-t], Show the nginx error logs for an application (-t follows)'
+    if [[ $1 = "nginx:help" ]] ; then
+        echo -e 'Usage: dokku nginx[:COMMAND]\n\nInteract with Dokkus Nginx proxy.\n\nAdditional commands:'
+        echo "$help_content" | sort | column -c2 -t -s,
+    else
+        echo "$help_content"
+    fi
   ;;
 
   *)
